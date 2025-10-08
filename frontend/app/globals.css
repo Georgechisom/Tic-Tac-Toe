@@ -1,0 +1,311 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* Indigo/Teal/Gold Color Palette */
+  --background: oklch(0.08 0.02 240);
+  --foreground: oklch(0.15 0.02 240);
+
+  /* Card colors with subtle teal tint */
+  --card: oklch(1 0.01 180);
+  --card-foreground: oklch(0.15 0.02 240);
+
+  /* Popover colors */
+  --popover: oklch(1 0.01 180);
+  --popover-foreground: oklch(0.15 0.02 240);
+
+  /* Primary - Deep Indigo */
+  --primary: oklch(0.35 0.15 260);
+  --primary-foreground: oklch(0.98 0.01 180);
+
+  /* Secondary - Teal accent */
+  --secondary: oklch(0.92 0.03 180);
+  --secondary-foreground: oklch(0.25 0.08 260);
+
+  /* Muted colors */
+  --muted: oklch(0.95 0.02 180);
+  --muted-foreground: oklch(0.55 0.05 240);
+
+  /* Accent - Gold highlights */
+  --accent: oklch(0.88 0.08 60);
+  --accent-foreground: oklch(0.25 0.08 260);
+
+  /* Destructive - Warm red */
+  --destructive: oklch(0.6 0.22 25);
+
+  /* Borders and inputs */
+  --border: oklch(0.88 0.02 180);
+  --input: oklch(0.92 0.02 180);
+  --ring: oklch(0.45 0.12 260);
+
+  /* Chart colors - Indigo/Teal/Gold theme */
+  --chart-1: oklch(0.45 0.15 260); /* Deep Indigo */
+  --chart-2: oklch(0.55 0.12 180); /* Teal */
+  --chart-3: oklch(0.65 0.15 60); /* Gold */
+  --chart-4: oklch(0.35 0.18 280); /* Purple */
+  --chart-5: oklch(0.75 0.08 160); /* Light Teal */
+
+  /* Sidebar colors */
+  --sidebar: oklch(0.25 0.08 260);
+  --sidebar-foreground: oklch(0.95 0.02 180);
+  --sidebar-primary: oklch(0.55 0.12 180);
+  --sidebar-primary-foreground: oklch(0.98 0.01 180);
+  --sidebar-accent: oklch(0.35 0.12 260);
+  --sidebar-accent-foreground: oklch(0.95 0.02 180);
+  --sidebar-border: oklch(0.35 0.08 260);
+  --sidebar-ring: oklch(0.55 0.12 180);
+}
+
+.dark {
+  /* Dark mode - Indigo/Teal/Gold theme */
+  --background: oklch(0.08 0.02 240);
+  --foreground: oklch(0.95 0.02 180);
+
+  /* Card colors with dark indigo base */
+  --card: oklch(0.12 0.03 240);
+  --card-foreground: oklch(0.95 0.02 180);
+
+  /* Popover colors */
+  --popover: oklch(0.12 0.03 240);
+  --popover-foreground: oklch(0.95 0.02 180);
+
+  /* Primary - Bright Teal */
+  --primary: oklch(0.65 0.15 180);
+  --primary-foreground: oklch(0.08 0.02 240);
+
+  /* Secondary - Dark indigo */
+  --secondary: oklch(0.18 0.05 260);
+  --secondary-foreground: oklch(0.95 0.02 180);
+
+  /* Muted colors */
+  --muted: oklch(0.15 0.03 240);
+  --muted-foreground: oklch(0.65 0.05 180);
+
+  /* Accent - Bright Gold */
+  --accent: oklch(0.75 0.12 60);
+  --accent-foreground: oklch(0.08 0.02 240);
+
+  /* Destructive - Bright red */
+  --destructive: oklch(0.7 0.25 25);
+
+  /* Borders and inputs */
+  --border: oklch(0.25 0.05 240);
+  --input: oklch(0.18 0.05 240);
+  --ring: oklch(0.65 0.15 180);
+
+  /* Chart colors - Dark mode variants */
+  --chart-1: oklch(0.55 0.18 260); /* Bright Indigo */
+  --chart-2: oklch(0.65 0.15 180); /* Bright Teal */
+  --chart-3: oklch(0.75 0.12 60); /* Bright Gold */
+  --chart-4: oklch(0.45 0.2 280); /* Bright Purple */
+  --chart-5: oklch(0.85 0.08 160); /* Light Bright Teal */
+
+  /* Sidebar colors */
+  --sidebar: oklch(0.12 0.03 240);
+  --sidebar-foreground: oklch(0.95 0.02 180);
+  --sidebar-primary: oklch(0.65 0.15 180);
+  --sidebar-primary-foreground: oklch(0.08 0.02 240);
+  --sidebar-accent: oklch(0.18 0.05 260);
+  --sidebar-accent-foreground: oklch(0.95 0.02 180);
+  --sidebar-border: oklch(0.25 0.05 240);
+  --sidebar-ring: oklch(0.65 0.15 180);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-color: oklch(0.08 0.02 240); /* Dark background */
+  }
+}
+
+@layer components {
+  /* Game Board Animations */
+  .game-cell {
+    @apply transition-all duration-200 ease-in-out;
+    @apply hover:scale-105 hover:shadow-lg;
+  }
+
+  .game-cell:hover {
+    @apply bg-accent/10;
+  }
+
+  /* Card Animations */
+  .card-hover {
+    @apply transition-all duration-300 ease-in-out;
+    @apply hover:shadow-xl hover:-translate-y-1;
+  }
+
+  /* Button Animations */
+  .btn-pulse {
+    @apply animate-pulse;
+  }
+
+  /* Fade In Animation */
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  /* Slide In Animation */
+  .slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  /* Navbar Gradient */
+  .navbar-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.25 0.08 260),
+      oklch(0.35 0.12 260)
+    );
+  }
+
+  /* Footer Gradient */
+  .footer-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.12 180),
+      oklch(0.45 0.15 180)
+    );
+  }
+
+  /* Hero Gradient */
+  .hero-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.98 0.005 240),
+      oklch(0.95 0.02 180)
+    );
+  }
+
+  .dark .hero-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.15 0.05 260),
+      oklch(0.18 0.08 180)
+    );
+  }
+
+  /* Game Icon Styles */
+  .game-icon-x {
+    @apply text-destructive;
+  }
+
+  .game-icon-o {
+    @apply text-primary;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive Design Tokens */
+@media (max-width: 768px) {
+  .game-board-mobile {
+    @apply grid-cols-3 gap-2;
+  }
+
+  .game-cell-mobile {
+    @apply h-20 w-20 text-2xl;
+  }
+
+  .navbar-mobile {
+    @apply px-4 py-3;
+  }
+
+  /* Mobile body padding */
+  body {
+    @apply px-4;
+  }
+
+  /* Container adjustments for very small devices */
+  .container {
+    @apply px-2;
+  }
+}
+
+/* Extra small devices (320px and down) */
+@media (max-width: 320px) {
+  body {
+    @apply px-2;
+  }
+
+  .container {
+    @apply px-1;
+  }
+
+  /* Footer adjustments for very small screens */
+  footer .container {
+    @apply px-3;
+  }
+
+  /* Navbar adjustments for very small screens */
+  .navbar-mobile {
+    @apply px-2 py-2;
+  }
+}

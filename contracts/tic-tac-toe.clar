@@ -4,11 +4,14 @@
 (define-constant ERR_GAME_NOT_FOUND u102) ;; Error thrown when a game cannot be found given a Game ID, i.e. invalid Game ID
 (define-constant ERR_GAME_CANNOT_BE_JOINED u103) ;; Error thrown when a game cannot be joined, usually because it already has two players
 (define-constant ERR_NOT_YOUR_TURN u104) ;; Error thrown when a player tries to make a move when it is not their turn
+(define-constant ERR_GAME_ENDED u105) ;; Error thrown when trying to forfeit an ended game
+(define-constant ERR_NOT_A_PLAYER u107) ;; Error thrown when caller is not a player in the game
+(define-constant ERR_GAME_NOT_ENDED u108) ;; Error thrown when trying to reset an ongoing game
 
 ;; The Game ID to use for the next game
 (define-data-var latest-game-id uint u0)
 
-(define-map games 
+(define-map games
     uint ;; Key (Game ID)
     { ;; Value (Game Tuple)
         player-one: principal,
@@ -17,8 +20,9 @@
 
         bet-amount: uint,
         board: (list 9 uint),
-        
-        winner: (optional principal)
+
+        winner: (optional principal),
+        forfeited: bool
     }
 )
 
@@ -37,7 +41,8 @@
             is-player-one-turn: false,
             bet-amount: bet-amount,
             board: game-board,
-            winner: none
+            winner: none,
+            forfeited: false
         })
     )
 
@@ -74,7 +79,8 @@
         (game-data (merge original-game-data {
             board: game-board,
             player-two: (some contract-caller),
-            is-player-one-turn: true
+            is-player-one-turn: true,
+            forfeited: false
         }))
     )
 
@@ -120,7 +126,8 @@
         (game-data (merge original-game-data {
             board: game-board,
             is-player-one-turn: (not is-player-one-turn),
-            winner: (if is-now-winner (some player-turn) none)
+            winner: (if is-now-winner (some player-turn) none),
+            forfeited: false
         }))
     )
 
@@ -149,6 +156,98 @@
 
 (define-read-only (get-latest-game-id)
     (var-get latest-game-id)
+)
+
+(define-public (forfeit-game (game-id uint))
+    (let (
+        (game-data (unwrap! (map-get? games game-id) (err ERR_GAME_NOT_FOUND)))
+    )
+        ;; Ensure the game is not already ended
+        (asserts! (and (is-eq (get winner game-data) none) (not (get forfeited game-data))) (err ERR_GAME_ENDED))
+        ;; Ensure the caller is one of the players
+        (let (
+            (is-player-one (is-eq contract-caller (get player-one game-data)))
+            (player-two-opt (get player-two game-data))
+        )
+            (asserts! (or is-player-one (is-eq contract-caller (unwrap! player-two-opt (err ERR_GAME_CANNOT_BE_JOINED)))) (err ERR_NOT_A_PLAYER))
+            ;; Determine the other player
+            (let (
+                (other-player (if is-player-one (unwrap! player-two-opt (err ERR_GAME_CANNOT_BE_JOINED)) (get player-one game-data)))
+            )
+                ;; Transfer the pot to the other player
+                (try! (as-contract (stx-transfer? (* u2 (get bet-amount game-data)) tx-sender other-player)))
+                ;; Update the game data
+                (map-set games game-id (merge game-data {
+                    winner: (some other-player),
+                    forfeited: true
+                }))
+                ;; Log the forfeit
+                (print { action: "forfeit-game", game-id: game-id, forfeiter: contract-caller, winner: other-player })
+                (ok true)
+            )
+        )
+    )
+)
+
+(define-public (reset-game (game-id uint) (new-bet uint))
+    (let (
+        (game-data (unwrap! (map-get? games game-id) (err ERR_GAME_NOT_FOUND)))
+        (player-one (get player-one game-data))
+        (player-two-opt (get player-two game-data))
+    )
+        ;; Ensure the game is ended
+        (asserts! (or (is-some (get winner game-data)) (get forfeited game-data)) (err ERR_GAME_NOT_ENDED))
+        ;; Ensure caller is one of the players
+        (asserts! (or (is-eq contract-caller player-one)
+                     (is-eq contract-caller (unwrap! player-two-opt (err ERR_GAME_CANNOT_BE_JOINED))))
+                 (err ERR_NOT_A_PLAYER))
+        ;; Ensure new bet is valid
+        (asserts! (> new-bet u0) (err ERR_MIN_BET_AMOUNT))
+        ;; Transfer new bet from caller
+        (try! (stx-transfer? new-bet contract-caller THIS_CONTRACT))
+        ;; Reset the game data - reset to single player state so it can be joined again
+        (let (
+            (reset-data (merge game-data {
+                board: (list u0 u0 u0 u0 u0 u0 u0 u0 u0),
+                winner: none,
+                forfeited: false,
+                is-player-one-turn: false,
+                bet-amount: new-bet,
+                player-one: contract-caller,
+                player-two: none
+            }))
+        )
+            (map-set games game-id reset-data)
+            ;; Log the reset
+            (print { action: "reset-game", game-id: game-id, resetter: contract-caller })
+            (ok game-id)
+        )
+    )
+)
+
+(define-read-only (get-game-status (game-id uint))
+    (let (
+        (game-data (map-get? games game-id))
+    )
+        (if (is-some game-data)
+            (let (
+                (data (unwrap-panic game-data))
+                (winner (get winner data))
+                (forfeited (get forfeited data))
+            )
+                (some
+                    (if forfeited
+                        { status: u3, winner: winner } ;; forfeited
+                        (if (is-some winner)
+                            { status: u1, winner: winner } ;; won
+                            { status: u0, winner: none } ;; ongoing
+                        )
+                    )
+                )
+            )
+            none
+        )
+    )
 )
 
 (define-private (validate-move (board (list 9 uint)) (move-index uint) (move uint))
