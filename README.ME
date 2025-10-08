@@ -1,0 +1,243 @@
+# Tic-Tac-Toe on Stacks Blockchain
+
+A decentralized implementation of the classic Tic-Tac-Toe game built on the Stacks blockchain. Players can create games, place bets with STX tokens, and compete in a trustless, transparent environment where every move is recorded on-chain.
+
+## Features
+
+- **Blockchain Security**: All game moves and bets are recorded on the Stacks blockchain for complete transparency
+- **Competitive Betting**: Place STX bets to make games more exciting
+- **Real-time Gameplay**: Smooth, responsive interface with instant updates
+- **Wallet Integration**: Connect your Stacks wallet to play
+- **Game Management**: Create, join, forfeit, and reset games
+- **Spectator Mode**: View ongoing games as a spectator
+
+## How to Play
+
+### Basic Rules
+Tic-Tac-Toe is played on a 3x3 grid. Two players take turns marking spaces with X and O. The first player to get three of their marks in a row (horizontally, vertically, or diagonally) wins the game.
+
+### On This Platform
+
+1. **Connect Wallet**: Connect your Stacks wallet (like Hiro Wallet) to the application
+2. **Create a Game**:
+   - Click "Create New Game"
+   - Set your bet amount in STX (minimum bet required)
+   - Make your first move by clicking on an empty cell (you play as X)
+3. **Join a Game**:
+   - Browse available games on the homepage
+   - Select a game waiting for a second player
+   - Match the bet amount
+   - Make your move by clicking on an empty cell (you play as O)
+4. **Play the Game**:
+   - Take turns making moves on the 3x3 grid
+   - The game ends when:
+     - A player gets three in a row (win)
+     - All cells are filled (draw - not implemented, games continue until win or forfeit)
+     - A player forfeits
+5. **Winning**:
+   - The winner receives the total pot (both players' bets)
+   - Funds are transferred automatically via smart contract
+6. **Post-Game**:
+   - Reset the game with a new bet to play again with the same opponent
+   - Or create a new game
+
+### Game States
+- **Waiting**: Game created, waiting for second player
+- **In Progress**: Both players joined, taking turns
+- **Completed**: Game ended (win, forfeit)
+- **Forfeited**: A player quit, opponent wins automatically
+
+## Tech Stack
+
+### Frontend
+- **Next.js 15**: React framework for the web interface
+- **TypeScript**: Type-safe JavaScript
+- **Tailwind CSS**: Utility-first CSS framework
+- **Radix UI**: Accessible UI components
+- **Stacks Connect**: Wallet connection and transaction handling
+- **Lucide React**: Icon library
+
+### Smart Contract
+- **Clarity**: Stacks blockchain smart contract language
+- **Stacks Blockchain**: Layer-1 blockchain for decentralized apps
+
+### Development Tools
+- **Clarinet**: Stacks development framework
+- **Vitest**: Unit testing framework
+- **ESLint**: Code linting
+
+## Prerequisites
+
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
+- **Clarinet** (Stacks development tool)
+- **Stacks Wallet** (e.g., Hiro Wallet) for playing
+
+## Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd tic-tac-toe
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   # Install root dependencies (for testing)
+   npm install
+
+   # Install frontend dependencies
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+3. **Set up Clarinet**:
+   Make sure Clarinet is installed and configured for Stacks development.
+
+## Running the Project
+
+### Development Mode
+
+1. **Start the local Stacks blockchain**:
+   ```bash
+   clarinet console
+   ```
+
+2. **Deploy contracts to local network**:
+   ```bash
+   clarinet deployments generate --devnet
+   ```
+
+3. **Start the frontend development server**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+4. **Open your browser** and navigate to `http://localhost:3000`
+
+### Testing
+
+Run the test suite:
+```bash
+npm test
+```
+
+For test coverage report:
+```bash
+npm run test:report
+```
+
+## Usage
+
+1. **Connect Wallet**: Click the wallet connection button and approve the connection
+2. **Create Game**: Go to `/create`, set bet amount, make first move
+3. **Join Game**: Browse games on homepage, select one, match bet, make move
+4. **Play**: Click empty cells to make moves, follow game status alerts
+5. **Manage**: Forfeit if needed, reset for rematch
+
+## Smart Contract Details
+
+### Contract Address
+`ST3W3XEFCN8Q9BN3KK2B8CY5PP9DX6HSSMAESKVGA.tic-tac-toe`
+
+### Key Functions
+
+- `create-game(bet-amount, move-index, move)`: Create new game with bet and first move
+- `join-game(game-id, move-index, move)`: Join existing game with matching bet and move
+- `play(game-id, move-index, move)`: Make a move in ongoing game
+- `forfeit-game(game-id)`: Forfeit current game
+- `reset-game(game-id, new-bet)`: Reset completed game with new bet
+- `get-game(game-id)`: Get game state
+- `get-latest-game-id()`: Get latest game ID
+
+### Game Data Structure
+```clarity
+{
+    player-one: principal,
+    player-two: (optional principal),
+    is-player-one-turn: bool,
+    bet-amount: uint,
+    board: (list 9 uint),  // 0=empty, 1=X, 2=O
+    winner: (optional principal),
+    forfeited: bool
+}
+```
+
+### Board Representation
+The 3x3 board is stored as a list of 9 uints:
+- 0: Empty cell
+- 1: X (Player One)
+- 2: O (Player Two)
+
+Indices map to positions:
+```
+0 1 2
+3 4 5
+6 7 8
+```
+
+### Winning Conditions
+A player wins by having three marks in:
+- Rows: (0,1,2), (3,4,5), (6,7,8)
+- Columns: (0,3,6), (1,4,7), (2,5,8)
+- Diagonals: (0,4,8), (2,4,6)
+
+## Testing
+
+The project includes comprehensive unit tests for the smart contract:
+
+- Game creation and joining
+- Move validation
+- Win condition detection
+- Bet handling
+- Forfeit and reset functionality
+
+Run tests with:
+```bash
+npm test
+```
+
+## Deployment
+
+### Contract Deployment
+1. Configure deployment settings in `Clarinet.toml`
+2. Generate deployment plans:
+   ```bash
+   clarinet deployments generate --testnet  # or --mainnet
+   ```
+3. Deploy using your preferred method (Clarinet console, Stacks CLI, etc.)
+
+### Frontend Deployment
+1. Build the frontend:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+2. Deploy to your hosting platform (Vercel, Netlify, etc.)
+3. Update contract address in frontend configuration
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+## License
+
+This project is licensed under the ISC License.
+
+## Disclaimer
+
+This is a demo application for educational purposes. Use at your own risk. Always test thoroughly before deploying to mainnet or using with real funds.
+
+## Support
+
+For questions or issues:
+- Check the GitHub issues page
+- Review the smart contract code for technical details
+- Ensure your wallet is properly configured for Stacks testnet/mainnet
